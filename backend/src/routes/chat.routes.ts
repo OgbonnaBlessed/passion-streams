@@ -1,0 +1,20 @@
+import express from 'express';
+import {
+  getChats,
+  getChatMessages,
+  sendMessage,
+  inviteAdmin,
+} from '../controllers/chat.controller';
+import { authenticate } from '../middleware/auth.middleware';
+
+const router = express.Router();
+
+router.use(authenticate);
+
+router.get('/', getChats);
+router.get('/:id/messages', getChatMessages);
+router.post('/:id/messages', sendMessage);
+router.post('/:id/invite-admin', inviteAdmin);
+
+export default router;
+
