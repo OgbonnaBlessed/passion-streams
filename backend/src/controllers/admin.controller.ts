@@ -2,7 +2,7 @@ import { Response } from "express";
 import { AuthRequest } from "../middleware/auth.middleware";
 import { UserModel } from "../models/user.model";
 import { CommunityPostModel } from "../models/communitypost.model";
-import { ContentModel } from "@/models/content.model";
+import { ContentModel } from "../models/content.model";
 
 export const getDashboard = async (_req: AuthRequest, res: Response) => {
   try {
