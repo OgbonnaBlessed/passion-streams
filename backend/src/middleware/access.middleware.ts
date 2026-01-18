@@ -1,7 +1,7 @@
 import { Response, NextFunction } from 'express';
 import { AuthRequest } from './auth.middleware';
-import { MODULE_ACCESS_RULES, AGE_LIMITS } from '@/shared/constants';
-import type { ModuleAccess, MaritalStatus } from '@/shared/types';
+import { MODULE_ACCESS_RULES, AGE_LIMITS } from '../shared/constants';
+import type { ModuleAccess, MaritalStatus } from '../shared/types';
 
 export const requireModuleAccess = (module: ModuleAccess) => {
   return (req: AuthRequest, res: Response, next: NextFunction) => {

@@ -1,4 +1,3 @@
-import { Timestamp } from 'firebase-admin/firestore';
 
 /**
  * Helper to convert Firestore Timestamp to Date

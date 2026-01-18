@@ -65,9 +65,12 @@ export const discover = async (req: AuthRequest, res: Response) => {
     const userGrowth = req.user.growthPercentage || 0;
     let userTier: GrowthTier = GrowthTier.TIER_1;
 
-    if (userGrowth >= GROWTH_TIER_THRESHOLDS.TIER_3) userTier = GrowthTier.TIER_3;
+    if (userGrowth >= GROWTH_TIER_THRESHOLDS.TIER_3)
+      userTier = GrowthTier.TIER_3;
     else if (userGrowth >= GROWTH_TIER_THRESHOLDS.TIER_2_MIN)
       userTier = GrowthTier.TIER_3;
+
+    console.log(userTier);
 
     const profiles = await PassionConnectProfileModel.find({
       isActive: true,

@@ -8,12 +8,13 @@ import {
 } from '../controllers/connect.controller';
 import { authenticate } from '../middleware/auth.middleware';
 import { requireModuleAccess } from '../middleware/access.middleware';
+import { ModuleAccess } from '../shared/types';
 
 const router = express.Router();
 
 // All routes require authentication and Passion Connect access
 router.use(authenticate);
-router.use(requireModuleAccess('PASSION_CONNECT'));
+router.use(requireModuleAccess(ModuleAccess.PASSION_CONNECT));
 
 router.get('/profile', getProfile);
 router.post('/profile', createOrUpdateProfile);
