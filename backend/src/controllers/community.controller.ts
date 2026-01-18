@@ -2,7 +2,7 @@ import { Response } from "express";
 import { Types } from "mongoose";
 import { AuthRequest } from "../middleware/auth.middleware";
 import { CommunityPostModel } from "../models/communitypost.model";
-import { CommentModel } from "@/models/comment.model";
+import { CommentModel } from "../models/comment.model";
 
 export const getPosts = async (req: AuthRequest, res: Response) => {
   try {
