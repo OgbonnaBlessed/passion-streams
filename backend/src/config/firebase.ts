@@ -1,24 +1,25 @@
-import admin from 'firebase-admin';
-import dotenv from 'dotenv';
+import admin from "firebase-admin";
+import dotenv from "dotenv";
 
 dotenv.config();
 
 if (!admin.apps.length) {
-  try {
-    admin.initializeApp({
-      credential: admin.credential.cert({
-        projectId: process.env.FIREBASE_PROJECT_ID,
-        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-        privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-      }),
-    });
-    console.log('Firebase Admin initialized');
-  } catch (error) {
-    console.error('Firebase Admin initialization error:', error);
+  const { FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY } =
+    process.env;
+
+  if (!FIREBASE_PROJECT_ID || !FIREBASE_CLIENT_EMAIL || !FIREBASE_PRIVATE_KEY) {
+    throw new Error("Missing Firebase environment variables");
   }
+
+  admin.initializeApp({
+    credential: admin.credential.cert({
+      projectId: FIREBASE_PROJECT_ID,
+      clientEmail: FIREBASE_CLIENT_EMAIL,
+      privateKey: FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n"),
+    }),
+  });
+
+  console.log("Firebase Admin initialized");
 }
 
-export const db = admin.firestore();
-export const storage = admin.storage();
 export default admin;
-
