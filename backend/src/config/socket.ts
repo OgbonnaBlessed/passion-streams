@@ -17,7 +17,7 @@ export const initializeSocket = (httpServer: HttpServer): SocketServer => {
     path: '/socket.io',
   });
 
-  // 🔐 Socket authentication
+  // Socket authentication
   io.use(async (socket: AuthenticatedSocket, next) => {
     try {
       const token = socket.handshake.auth.token;

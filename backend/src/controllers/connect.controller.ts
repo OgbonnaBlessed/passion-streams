@@ -6,6 +6,7 @@ import { ConnectionModel } from "../models/connection.model";
 import { GROWTH_TIER_THRESHOLDS } from "../shared/constants";
 import { GrowthTier } from "../shared/types";
 
+// Fetch the authenticated user's profile
 export const getProfile = async (req: AuthRequest, res: Response) => {
   try {
     if (!req.user)
@@ -14,6 +15,7 @@ export const getProfile = async (req: AuthRequest, res: Response) => {
     const profile = await PassionConnectProfileModel.findOne({
       userId: req.user._id,
     });
+
     res.json(profile);
   } catch (error: any) {
     res
@@ -22,6 +24,7 @@ export const getProfile = async (req: AuthRequest, res: Response) => {
   }
 };
 
+// Create or update the user's profile
 export const createOrUpdateProfile = async (
   req: AuthRequest,
   res: Response,
@@ -57,6 +60,7 @@ export const createOrUpdateProfile = async (
   }
 };
 
+// Discover other active profiles (excluding self)
 export const discover = async (req: AuthRequest, res: Response) => {
   try {
     if (!req.user)
@@ -65,6 +69,7 @@ export const discover = async (req: AuthRequest, res: Response) => {
     const userGrowth = req.user.growthPercentage || 0;
     let userTier: GrowthTier = GrowthTier.TIER_1;
 
+    // Determine growth tier based on thresholds
     if (userGrowth >= GROWTH_TIER_THRESHOLDS.TIER_3)
       userTier = GrowthTier.TIER_3;
     else if (userGrowth >= GROWTH_TIER_THRESHOLDS.TIER_2_MIN)
@@ -76,6 +81,7 @@ export const discover = async (req: AuthRequest, res: Response) => {
       isActive: true,
       userId: { $ne: req.user._id },
     });
+
     res.json(profiles);
   } catch (error: any) {
     res
@@ -84,6 +90,7 @@ export const discover = async (req: AuthRequest, res: Response) => {
   }
 };
 
+// Record a swipe and create a connection if mutual
 export const swipe = async (req: AuthRequest, res: Response) => {
   try {
     if (!req.user)
@@ -103,6 +110,7 @@ export const swipe = async (req: AuthRequest, res: Response) => {
         ],
       });
 
+      // Prevent duplicate connections
       if (!existingConnection) {
         await SwipeModel.create({
           userId: req.user._id,
@@ -122,6 +130,7 @@ export const swipe = async (req: AuthRequest, res: Response) => {
             user2Id: profileId,
             status: "CONNECTED",
           });
+
           return res.json({
             message: "It's a match!",
             connected: true,
@@ -137,6 +146,7 @@ export const swipe = async (req: AuthRequest, res: Response) => {
   }
 };
 
+// Fetch all active connections for the user
 export const getConnections = async (req: AuthRequest, res: Response) => {
   try {
     if (!req.user)

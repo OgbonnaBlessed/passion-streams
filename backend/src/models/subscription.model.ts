@@ -1,23 +1,24 @@
 import { Schema, model, Document } from "mongoose";
 
-export type SubscriptionStatus =
-  | "ACTIVE"
-  | "CANCELLED"
-  | "PAST_DUE"
-  | "EXPIRED";
+// Possible statuses for a subscription
+export type SubscriptionStatus = "ACTIVE" | "CANCELLED" | "PAST_DUE" | "EXPIRED";
+
+// Subscription billing plans
 export type SubscriptionPlan = "MONTHLY" | "YEARLY";
 
+// Interface for a subscription record
 export interface ISubscription extends Document {
-  userId: string;
-  stripeSubscriptionId?: string;
-  stripeCustomerId?: string;
-  status: SubscriptionStatus;
-  plan: SubscriptionPlan;
-  currentPeriodEnd: Date;
+  userId: string; // User who owns the subscription
+  stripeSubscriptionId?: string; // Stripe subscription reference
+  stripeCustomerId?: string; // Stripe customer reference
+  status: SubscriptionStatus; // Current status
+  plan: SubscriptionPlan; // Billing plan
+  currentPeriodEnd: Date; // End of current billing period
   createdAt: Date;
   updatedAt: Date;
 }
 
+// Mongoose schema
 const SubscriptionSchema = new Schema<ISubscription>(
   {
     userId: { type: String, required: true },
@@ -31,10 +32,11 @@ const SubscriptionSchema = new Schema<ISubscription>(
     plan: { type: String, enum: ["MONTHLY", "YEARLY"], required: true },
     currentPeriodEnd: { type: Date, required: true },
   },
-  { timestamps: true },
+  { timestamps: true }, // Tracks createdAt and updatedAt
 );
 
+// Export model
 export const SubscriptionModel = model<ISubscription>(
   "Subscription",
-  SubscriptionSchema,
+  SubscriptionSchema
 );

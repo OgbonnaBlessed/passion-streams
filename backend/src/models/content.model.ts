@@ -1,5 +1,6 @@
 import { Schema, model, Document } from "mongoose";
 
+// Possible content types
 export type ContentType =
   | "PDF"
   | "AUDIO"
@@ -8,24 +9,27 @@ export type ContentType =
   | "ANNOUNCEMENT"
   | "PRAYER_POINT";
 
+// Which modules can access this content
 export type ModuleAccess = "PASSION_SINGLES" | "PASSION_CONNECT" | "PASSION_COUPLES";
 
+// Content document interface
 export interface IContent extends Document {
-  title: string;
-  description?: string;
-  type: ContentType;
-  url: string;
-  thumbnailUrl?: string;
-  duration?: number; // in seconds
-  category?: string;
-  tags: string[];
-  isPremium: boolean;
-  moduleAccess: ModuleAccess[];
-  createdBy: string; // admin userId
+  title: string; // Content title
+  description?: string; // Optional description
+  type: ContentType; // Type of content
+  url: string; // File/stream URL
+  thumbnailUrl?: string; // Optional thumbnail
+  duration?: number; // Duration in seconds (for audio/video)
+  category?: string; // Optional category
+  tags: string[]; // Searchable tags
+  isPremium: boolean; // Premium content flag
+  moduleAccess: ModuleAccess[]; // Modules that can access
+  createdBy: string; // Admin userId who created it
   createdAt: Date;
   updatedAt: Date;
 }
 
+// Mongoose schema
 const ContentSchema = new Schema<IContent>(
   {
     title: { type: String, required: true },
@@ -46,9 +50,10 @@ const ContentSchema = new Schema<IContent>(
       enum: ["PASSION_SINGLES", "PASSION_CONNECT", "PASSION_COUPLES"],
       required: true,
     },
-    createdBy: { type: String, required: true }, // store admin userId
+    createdBy: { type: String, required: true }, // Admin userId
   },
-  { timestamps: true }
+  { timestamps: true } // Auto-manages createdAt & updatedAt
 );
 
+// Export model
 export const ContentModel = model<IContent>("Content", ContentSchema);

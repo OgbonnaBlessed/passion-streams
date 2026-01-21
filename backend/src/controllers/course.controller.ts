@@ -3,7 +3,7 @@ import { AuthRequest } from "../middleware/auth.middleware";
 import { CourseModel } from "../models/course.model";
 import { CourseProgressModel } from "../models/courseProgress.model";
 
-// Get all courses
+// Fetch all courses
 export const getCourses = async (_req: AuthRequest, res: Response) => {
   try {
     const courses = await CourseModel.find().sort({ createdAt: -1 });
@@ -15,7 +15,7 @@ export const getCourses = async (_req: AuthRequest, res: Response) => {
   }
 };
 
-// Get course by ID
+// Fetch a single course by ID
 export const getCourseById = async (req: AuthRequest, res: Response) => {
   try {
     const course = await CourseModel.findById(req.params.id);
@@ -28,7 +28,7 @@ export const getCourseById = async (req: AuthRequest, res: Response) => {
   }
 };
 
-// Get user progress for a course
+// Get the authenticated user's progress for a course
 export const getProgress = async (req: AuthRequest, res: Response) => {
   try {
     if (!req.user)
@@ -39,6 +39,7 @@ export const getProgress = async (req: AuthRequest, res: Response) => {
       courseId: req.params.id,
     });
 
+    // Return default progress if none exists
     if (!progress) {
       return res.json({
         courseId: req.params.id,
@@ -56,7 +57,7 @@ export const getProgress = async (req: AuthRequest, res: Response) => {
   }
 };
 
-// Update user progress
+// Create or update course progress for the user
 export const updateProgress = async (req: AuthRequest, res: Response) => {
   try {
     if (!req.user)
@@ -75,6 +76,8 @@ export const updateProgress = async (req: AuthRequest, res: Response) => {
       completionPercentage: completionPercentage || 0,
       lastAccessedAt: now,
     };
+
+    // Mark course as completed when 100% is reached
     if (completionPercentage === 100) progressData.completedAt = now;
 
     if (!progress) {

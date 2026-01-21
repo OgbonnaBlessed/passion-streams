@@ -1,23 +1,26 @@
 import { Schema, model, Document, Types } from "mongoose";
 
+// Represents a mutual connection between two users
 export interface IConnection extends Document {
-  user1Id: Types.ObjectId;
-  user2Id: Types.ObjectId;
-  status: "CONNECTED";
-  createdAt: Date;
-  connectedAt: Date;
+  user1Id: Types.ObjectId; // First user in the connection
+  user2Id: Types.ObjectId; // Second user in the connection
+  status: "CONNECTED"; // Current connection status
+  createdAt: Date; // When document was created
+  connectedAt: Date; // When users became connected
 }
 
+// Mongoose schema
 const ConnectionSchema = new Schema<IConnection>(
   {
-    user1Id: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    user2Id: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    status: { type: String, enum: ["CONNECTED"], default: "CONNECTED" },
-    connectedAt: { type: Date, default: Date.now },
+    user1Id: { type: Schema.Types.ObjectId, ref: "User", required: true }, // First user
+    user2Id: { type: Schema.Types.ObjectId, ref: "User", required: true }, // Second user
+    status: { type: String, enum: ["CONNECTED"], default: "CONNECTED" }, // Always connected
+    connectedAt: { type: Date, default: Date.now }, // Timestamp of connection
   },
-  { timestamps: true },
+  { timestamps: true }, // Auto-manages createdAt & updatedAt
 );
 
+// Export model
 export const ConnectionModel = model<IConnection>(
   "Connection",
   ConnectionSchema,

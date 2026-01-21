@@ -2,7 +2,7 @@ import { Response } from "express";
 import { AuthRequest } from "../middleware/auth.middleware";
 import { ContentModel, IContent } from "../models/content.model";
 
-// GET /content
+// Fetch content with optional filters
 export const getContent = async (req: AuthRequest, res: Response) => {
   try {
     const module = req.query.module as string | undefined;
@@ -25,7 +25,7 @@ export const getContent = async (req: AuthRequest, res: Response) => {
   }
 };
 
-// GET /content/:id
+// Fetch a single content item by ID
 export const getContentById = async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
@@ -41,7 +41,7 @@ export const getContentById = async (req: AuthRequest, res: Response) => {
   }
 };
 
-// GET /content/search?q=&module=
+// Search content by title or description
 export const searchContent = async (req: AuthRequest, res: Response) => {
   try {
     const q = (req.query.q as string) || "";
@@ -56,7 +56,7 @@ export const searchContent = async (req: AuthRequest, res: Response) => {
       ? allContent.filter(
           (item) =>
             item.title?.toLowerCase().includes(q.toLowerCase()) ||
-            item.description?.toLowerCase().includes(q.toLowerCase())
+            item.description?.toLowerCase().includes(q.toLowerCase()),
         )
       : allContent;
 

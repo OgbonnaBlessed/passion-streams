@@ -2,7 +2,7 @@ import { Response } from "express";
 import { AuthRequest } from "../middleware/auth.middleware";
 import { VolunteerModel } from "../models/volunteer.model";
 
-// Return bank & donation info (static data for now)
+// Return donation and bank details (static for now)
 export const getDonationInfo = async (_req: AuthRequest, res: Response) => {
   try {
     res.json({
@@ -30,15 +30,15 @@ export const getDonationInfo = async (_req: AuthRequest, res: Response) => {
   }
 };
 
-// Submit a volunteer form
+// Submit a volunteer application
 export const submitVolunteer = async (req: AuthRequest, res: Response) => {
   try {
-    if (!req.user) {
+    if (!req.user)
       return res.status(401).json({ message: "Not authenticated" });
-    }
 
     const { name, email, phone, roles, message } = req.body;
 
+    // Basic request validation
     if (!name || !email || !phone || !roles || roles.length === 0) {
       return res.status(400).json({
         message: "Name, email, phone, and at least one role are required",
@@ -54,15 +54,12 @@ export const submitVolunteer = async (req: AuthRequest, res: Response) => {
       status: "PENDING",
     });
 
-    // TODO: notify admin (via email/notification system)
-
+    // TODO: notify admin
     res.status(201).json(volunteer);
   } catch (error: any) {
-    res
-      .status(500)
-      .json({
-        message: "Failed to submit volunteer form",
-        error: error.message,
-      });
+    res.status(500).json({
+      message: "Failed to submit volunteer form",
+      error: error.message,
+    });
   }
 };

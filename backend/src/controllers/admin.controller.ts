@@ -1,9 +1,10 @@
 import { Response } from "express";
 import { AuthRequest } from "../middleware/auth.middleware";
 import { UserModel } from "../models/user.model";
-import { CommunityPostModel } from "../models/communitypost.model";
+import { CommunityPostModel } from "../models/communityPost.model";
 import { ContentModel } from "../models/content.model";
 
+// Dashboard summary stats
 export const getDashboard = async (_req: AuthRequest, res: Response) => {
   try {
     const [totalUsers, totalPosts, pendingPosts] = await Promise.all([
@@ -27,6 +28,7 @@ export const getDashboard = async (_req: AuthRequest, res: Response) => {
   }
 };
 
+// Fetch items awaiting moderation
 export const getModerationQueue = async (req: AuthRequest, res: Response) => {
   try {
     const { type = "posts" } = req.query;
@@ -39,7 +41,7 @@ export const getModerationQueue = async (req: AuthRequest, res: Response) => {
       return res.json({ posts, comments: [] });
     }
 
-    // comments model later
+    // Comments support to be added later
     res.json({ posts: [], comments: [] });
   } catch (error: any) {
     res.status(500).json({
@@ -49,6 +51,7 @@ export const getModerationQueue = async (req: AuthRequest, res: Response) => {
   }
 };
 
+// Approve a pending post
 export const approvePost = async (req: AuthRequest, res: Response) => {
   await CommunityPostModel.findByIdAndUpdate(req.params.id, {
     status: "APPROVED",
@@ -59,6 +62,7 @@ export const approvePost = async (req: AuthRequest, res: Response) => {
   res.json({ message: "Post approved" });
 };
 
+// Reject a post with a reason
 export const rejectPost = async (req: AuthRequest, res: Response) => {
   await CommunityPostModel.findByIdAndUpdate(req.params.id, {
     status: "REJECTED",
@@ -70,6 +74,7 @@ export const rejectPost = async (req: AuthRequest, res: Response) => {
   res.json({ message: "Post rejected" });
 };
 
+// Create new content item
 export const createContent = async (req: AuthRequest, res: Response) => {
   try {
     const contentData = {
@@ -92,6 +97,7 @@ export const createContent = async (req: AuthRequest, res: Response) => {
   }
 };
 
+// Update an existing content item
 export const updateContent = async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
@@ -99,7 +105,7 @@ export const updateContent = async (req: AuthRequest, res: Response) => {
     const updatedContent = await ContentModel.findByIdAndUpdate(
       id,
       { ...req.body },
-      { new: true, runValidators: true }, // return updated doc
+      { new: true, runValidators: true }, // return updated document
     );
 
     if (!updatedContent) {
@@ -119,6 +125,7 @@ export const updateContent = async (req: AuthRequest, res: Response) => {
   }
 };
 
+// Delete a content item
 export const deleteContent = async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
@@ -139,6 +146,7 @@ export const deleteContent = async (req: AuthRequest, res: Response) => {
   }
 };
 
+// High-level platform analytics
 export const getAnalytics = async (_req: AuthRequest, res: Response) => {
   try {
     const [totalUsers, totalContents, totalPosts] = await Promise.all([
@@ -147,7 +155,7 @@ export const getAnalytics = async (_req: AuthRequest, res: Response) => {
       CommunityPostModel.countDocuments(),
     ]);
 
-    // Example engagement calculation
+    // Aggregate total likes across posts
     const totalLikes = await CommunityPostModel.aggregate([
       { $project: { likesCount: { $size: "$likes" } } },
       { $group: { _id: null, totalLikes: { $sum: "$likesCount" } } },

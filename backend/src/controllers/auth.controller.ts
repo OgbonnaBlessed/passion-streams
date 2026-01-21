@@ -7,11 +7,13 @@ import { AGE_LIMITS } from "../shared/constants";
 import { comparePassword, generateToken, hashPassword } from "../utils/auth";
 import { AuthRequest } from "../middleware/auth.middleware";
 
+// Google OAuth client
 const googleClient = new OAuth2Client(
   process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET,
 );
 
+// Signup payload shape
 interface SignupData {
   fullName: string;
   email: string;
@@ -21,6 +23,7 @@ interface SignupData {
   maritalStatus: MaritalStatus;
 }
 
+// Email/password signup
 export const signup = async (req: Request, res: Response) => {
   try {
     const {
@@ -32,7 +35,7 @@ export const signup = async (req: Request, res: Response) => {
       maritalStatus,
     }: SignupData = req.body;
 
-    // Validation
+    // Basic validation
     if (
       !fullName ||
       !email ||
@@ -43,18 +46,19 @@ export const signup = async (req: Request, res: Response) => {
     ) {
       return res.status(400).json({ message: "All fields are required" });
     }
+
     if (age < AGE_LIMITS.MIN_AGE) {
       return res
         .status(400)
         .json({ message: `Must be at least ${AGE_LIMITS.MIN_AGE} years old` });
     }
 
-    // Check if user exists
+    // Prevent duplicate accounts
     const existingUser = await UserModel.findOne({ email });
     if (existingUser)
       return res.status(400).json({ message: "Email already registered" });
 
-    // Hash password
+    // Store hashed password
     const hashedPassword = await hashPassword(password);
 
     const user = await UserModel.create({
@@ -67,7 +71,7 @@ export const signup = async (req: Request, res: Response) => {
       role: UserRole.USER,
     });
 
-    // Generate token
+    // Issue JWT
     const token = generateToken({
       userId: user._id.toString(),
       email: user.email,
@@ -81,9 +85,11 @@ export const signup = async (req: Request, res: Response) => {
   }
 };
 
+// Email/password login
 export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
+
     if (!email || !password)
       return res
         .status(400)
@@ -93,8 +99,7 @@ export const login = async (req: Request, res: Response) => {
     if (!user || !user.password)
       return res.status(401).json({ message: "Invalid credentials" });
 
-    const isValid: boolean = await comparePassword(password, user.password);
-
+    const isValid = await comparePassword(password, user.password);
     if (!isValid)
       return res.status(401).json({ message: "Invalid credentials" });
 
@@ -103,6 +108,7 @@ export const login = async (req: Request, res: Response) => {
       email: user.email,
       role: user.role as UserRole,
     });
+
     res.json({ user, token });
   } catch (error: any) {
     console.error("Login error:", error);
@@ -110,6 +116,7 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
+// Google sign-in using ID token
 export const googleLogin = async (req: Request, res: Response) => {
   try {
     const { idToken } = req.body;
@@ -120,12 +127,12 @@ export const googleLogin = async (req: Request, res: Response) => {
       idToken,
       audience: process.env.GOOGLE_CLIENT_ID,
     });
+
     const payload = ticket.getPayload();
     if (!payload?.email)
       return res.status(400).json({ message: "Email not provided by Google" });
 
-    let user = await UserModel.findOne({ email: payload.email });
-
+    const user = await UserModel.findOne({ email: payload.email });
     if (!user) {
       return res.status(400).json({
         message: "Please sign up first with email/password",
@@ -133,6 +140,7 @@ export const googleLogin = async (req: Request, res: Response) => {
       });
     }
 
+    // Update profile image if available
     user.avatarUrl = payload.picture || user.avatarUrl;
     await user.save();
 
@@ -141,6 +149,7 @@ export const googleLogin = async (req: Request, res: Response) => {
       email: user.email,
       role: user.role as UserRole,
     });
+
     res.json({ user, token });
   } catch (error: any) {
     console.error("Google login error:", error);
@@ -150,6 +159,7 @@ export const googleLogin = async (req: Request, res: Response) => {
   }
 };
 
+// Apple sign-in via Firebase token verification
 export const appleLogin = async (req: Request, res: Response) => {
   try {
     const { idToken, user: appleUser } = req.body;
@@ -159,7 +169,7 @@ export const appleLogin = async (req: Request, res: Response) => {
     let decodedToken;
     try {
       decodedToken = await admin.auth().verifyIdToken(idToken);
-    } catch (err) {
+    } catch {
       return res.status(401).json({ message: "Invalid Apple token" });
     }
 
@@ -167,7 +177,7 @@ export const appleLogin = async (req: Request, res: Response) => {
     if (!email)
       return res.status(400).json({ message: "Email not provided by Apple" });
 
-    let user = await UserModel.findOne({ email });
+    const user = await UserModel.findOne({ email });
     if (!user)
       return res
         .status(400)
@@ -181,6 +191,7 @@ export const appleLogin = async (req: Request, res: Response) => {
       email: user.email,
       role: user.role as UserRole,
     });
+
     res.json({ user, token });
   } catch (error: any) {
     console.error("Apple login error:", error);
@@ -190,19 +201,12 @@ export const appleLogin = async (req: Request, res: Response) => {
   }
 };
 
-// Logout controller
+// Logout (JWT is stateless)
 export const logout = async (_req: AuthRequest, res: Response) => {
-  try {
-    // In a JWT setup, logout usually requires token invalidation/blacklisting
-    // For now, just return a success message
-    res.json({ message: "Logged out successfully" });
-  } catch (error: any) {
-    console.error("Logout error:", error);
-    res.status(500).json({ message: "Logout failed", error: error.message });
-  }
+  res.json({ message: "Logged out successfully" });
 };
 
-// Get current authenticated user
+// Return authenticated user
 export const getCurrentUser = async (req: AuthRequest, res: Response) => {
   try {
     if (!req.user) {

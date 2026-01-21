@@ -3,6 +3,7 @@ import { AuthRequest } from "../middleware/auth.middleware";
 import { ChatModel } from "../models/chat.model";
 import { UserModel } from "../models/user.model";
 
+// Fetch chats for the authenticated user
 export const getChats = async (req: AuthRequest, res: Response) => {
   try {
     if (!req.user)
@@ -25,6 +26,7 @@ export const getChats = async (req: AuthRequest, res: Response) => {
   }
 };
 
+// Fetch messages for a specific chat
 export const getChatMessages = async (req: AuthRequest, res: Response) => {
   try {
     if (!req.user)
@@ -35,8 +37,10 @@ export const getChatMessages = async (req: AuthRequest, res: Response) => {
     const chat = await ChatModel.findById(chatId)
       .populate("messages.senderId", "fullName email")
       .lean();
+
     if (!chat) return res.status(404).json({ message: "Chat not found" });
 
+    // Ensure user is a participant
     if (!chat.participants.map(String).includes(req.user._id.toString()))
       return res.status(403).json({ message: "Access denied" });
 
@@ -48,6 +52,7 @@ export const getChatMessages = async (req: AuthRequest, res: Response) => {
   }
 };
 
+// Send a new message in a chat
 export const sendMessage = async (req: AuthRequest, res: Response) => {
   try {
     if (!req.user)
@@ -62,6 +67,7 @@ export const sendMessage = async (req: AuthRequest, res: Response) => {
     const chat = await ChatModel.findById(chatId);
     if (!chat) return res.status(404).json({ message: "Chat not found" });
 
+    // Ensure user is a participant
     if (!chat.participants.map(String).includes(req.user._id.toString()))
       return res.status(403).json({ message: "Access denied" });
 
@@ -85,6 +91,7 @@ export const sendMessage = async (req: AuthRequest, res: Response) => {
   }
 };
 
+// Invite an admin into an active chat
 export const inviteAdmin = async (req: AuthRequest, res: Response) => {
   try {
     if (!req.user)
@@ -98,6 +105,7 @@ export const inviteAdmin = async (req: AuthRequest, res: Response) => {
     const admin = await UserModel.findOne({ role: "ADMIN" });
     if (!admin) return res.status(404).json({ message: "No admin available" });
 
+    // Add admin if not already present
     if (!chat.participants.map(String).includes(admin._id.toString())) {
       chat.adminId = admin._id;
       chat.participants.push(admin._id);

@@ -8,16 +8,14 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
   apiVersion: "2023-10-16",
 });
 
-// Create a new Stripe subscription and save in MongoDB
+// Create a new Stripe subscription and save it in MongoDB
 export const createSubscription = async (req: AuthRequest, res: Response) => {
   try {
-    if (!req.user)
-      return res.status(401).json({ message: "Not authenticated" });
+    if (!req.user) return res.status(401).json({ message: "Not authenticated" });
 
-    const { planId } = req.body; // 'monthly_premium' or 'yearly_premium'
+    const { planId } = req.body; // price ID from Stripe
 
-    // Stripe customer (for simplicity, using userId)
-    const customerId = req.user._id;
+    const customerId = req.user._id; // Using userId as customer identifier
 
     // Create Stripe subscription
     const subscription = await stripe.subscriptions.create({
@@ -40,32 +38,27 @@ export const createSubscription = async (req: AuthRequest, res: Response) => {
 
     res.json({
       subscriptionId: subscription.id,
-      clientSecret: (subscription.latest_invoice as any)?.payment_intent
-        ?.client_secret,
+      clientSecret: (subscription.latest_invoice as any)?.payment_intent?.client_secret,
       subscription: newSub,
     });
   } catch (error: any) {
     console.error("Create subscription error:", error);
-    res
-      .status(500)
-      .json({ message: "Failed to create subscription", error: error.message });
+    res.status(500).json({ message: "Failed to create subscription", error: error.message });
   }
 };
 
-// Create a purchase (one-time payment) and save in MongoDB
+// Create a one-time purchase and save in MongoDB
 export const createPurchase = async (req: AuthRequest, res: Response) => {
   try {
-    if (!req.user)
-      return res.status(401).json({ message: "Not authenticated" });
+    if (!req.user) return res.status(401).json({ message: "Not authenticated" });
 
     const { itemType, itemId, amount } = req.body;
-
     if (!itemType || !itemId || !amount)
       return res.status(400).json({ message: "All fields are required" });
 
     // Create Stripe PaymentIntent
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(amount * 100), // cents
+      amount: Math.round(amount * 100), // convert to cents
       currency: "usd",
       metadata: { userId: req.user._id, itemType, itemId },
     });
@@ -83,13 +76,11 @@ export const createPurchase = async (req: AuthRequest, res: Response) => {
     res.json({ clientSecret: paymentIntent.client_secret, purchase });
   } catch (error: any) {
     console.error("Create purchase error:", error);
-    res
-      .status(500)
-      .json({ message: "Failed to create purchase", error: error.message });
+    res.status(500).json({ message: "Failed to create purchase", error: error.message });
   }
 };
 
-// Handle Stripe webhook events
+// Handle incoming Stripe webhook events
 export const handleWebhook = async (req: Request, res: Response) => {
   const sig = req.headers["stripe-signature"];
   if (!sig) return res.status(400).send("No signature");
@@ -105,10 +96,8 @@ export const handleWebhook = async (req: Request, res: Response) => {
       case "payment_intent.succeeded": {
         const paymentIntent = event.data.object as Stripe.PaymentIntent;
 
-        // Update purchase status in MongoDB
-        const purchase = await PurchaseModel.findOne({
-          stripePaymentIntentId: paymentIntent.id,
-        });
+        // Update purchase status
+        const purchase = await PurchaseModel.findOne({ stripePaymentIntentId: paymentIntent.id });
         if (purchase) {
           purchase.status = "SUCCESS";
           purchase.updatedAt = new Date();
@@ -121,16 +110,11 @@ export const handleWebhook = async (req: Request, res: Response) => {
       case "customer.subscription.deleted": {
         const subscription = event.data.object as Stripe.Subscription;
 
-        const sub = await SubscriptionModel.findOne({
-          stripeSubscriptionId: subscription.id,
-        });
-
+        // Update subscription status
+        const sub = await SubscriptionModel.findOne({ stripeSubscriptionId: subscription.id });
         if (sub) {
-          sub.status =
-            subscription.status.toUpperCase() as ISubscription["status"];
-          sub.currentPeriodEnd = new Date(
-            subscription.current_period_end! * 1000,
-          );
+          sub.status = subscription.status.toUpperCase() as ISubscription["status"];
+          sub.currentPeriodEnd = new Date(subscription.current_period_end! * 1000);
           sub.updatedAt = new Date();
           await sub.save();
         }
