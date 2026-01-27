@@ -97,10 +97,14 @@ export const likePost = async (req: AuthRequest, res: Response) => {
     if (!post) return res.status(404).json({ message: "Post not found" });
 
     const userId = new Types.ObjectId(req.user._id);
-    const isLiked = post.likes.some((like) => like.equals(userId));
+    const isLiked = post.likes.some((like: Types.ObjectId) =>
+      like.equals(userId),
+    );
 
     if (isLiked) {
-      post.likes = post.likes.filter((like) => !like.equals(userId));
+      post.likes = post.likes.filter(
+        (like: Types.ObjectId) => !like.equals(userId),
+      );
     } else {
       post.likes.push(userId);
     }
