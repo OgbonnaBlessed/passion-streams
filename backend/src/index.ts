@@ -56,6 +56,15 @@ app.use(
   })
 );
 
+// Base route
+app.get("/", (_req, res) => {
+  res.json({
+    name: "Passion Streams API",
+    status: "running",
+    version: "1.0.0",
+  });
+});
+
 // Health check
 app.get("/health", (_req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
