@@ -1,7 +1,7 @@
 import { Response } from "express";
 import { AuthRequest } from "../middleware/auth.middleware";
 import { UserModel } from "../models/user.model";
-import { CommunityPostModel } from "../models/communityPost.model";
+import { CommunityPostModel } from "../models/communitypost.model";
 import { ContentModel } from "../models/content.model";
 
 // Dashboard summary stats

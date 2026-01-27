@@ -1,7 +1,7 @@
 import { Response } from "express";
 import { Types } from "mongoose";
 import { AuthRequest } from "../middleware/auth.middleware";
-import { CommunityPostModel } from "../models/communityPost.model";
+import { CommunityPostModel } from "../models/communitypost.model";
 import { CommentModel } from "../models/comment.model";
 
 // Fetch community posts with role-based filtering
