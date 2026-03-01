@@ -1,16 +1,13 @@
-import { NavLink, useLocation } from 'react-router-dom';
-import { useAuthStore } from '../../store/authStore';
-import { 
-  FiHome, 
-  FiUsers, 
-  FiHeart, 
-  // FiSettings,
+import {
   FiBook,
-  // FiMessageCircle,
-  FiDollarSign
+  FiDollarSign,
+  FiHeart,
+  FiHome,
+  FiUsers
 } from 'react-icons/fi';
-// import type { ModuleAccess, MaritalStatus } from '../../../../shared/types';
+import { NavLink, useLocation } from 'react-router-dom';
 import { MODULE_ACCESS_RULES } from '../../../../shared/constants';
+import { useAuthStore } from '../../store/authStore';
 
 export default function Sidebar() {
   const { user } = useAuthStore();

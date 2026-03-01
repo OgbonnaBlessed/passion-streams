@@ -1,26 +1,26 @@
-import { useState, useEffect, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import type { ChatMessage } from "@/shared/types";
+import { format } from "date-fns";
+import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
 import {
+  FiArrowLeft,
   FiSend,
   FiUser,
   // FiMessageCircle,
   FiUserCheck,
-  FiArrowLeft,
 } from "react-icons/fi";
-import { chatService } from "../../services/chatService";
+import { useNavigate, useParams } from "react-router-dom";
 import { useSocket } from "../../hooks/useSocket";
+import { chatService } from "../../services/chatService";
 import {
-  onNewMessage,
   emitTyping,
-  sendSocketMessage,
   joinChat,
   leaveChat,
+  onNewMessage,
+  sendSocketMessage,
 } from "../../services/socketService";
 import { useAuthStore } from "../../store/authStore";
-import type { ChatMessage } from "@/shared/types";
-import toast from "react-hot-toast";
-import { format } from "date-fns";
 
 export default function ChatPage() {
   const { chatId: paramChatId } = useParams();
@@ -35,6 +35,8 @@ export default function ChatPage() {
   const socket = useSocket();
 
   const chatId = paramChatId || null;
+
+  console.log(setTypingUsers);
 
   useEffect(() => {
     if (chatId) {
@@ -171,7 +173,7 @@ export default function ChatPage() {
       <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-background">
         <AnimatePresence>
           {messages.map((message, index) => {
-            const isOwn = message.senderId === user?.id;
+            const isOwn = message.senderId === user?._id;
             const isNewDay =
               index === 0 ||
               new Date(message.createdAt).toDateString() !==

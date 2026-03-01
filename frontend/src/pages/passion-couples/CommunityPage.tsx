@@ -1,10 +1,10 @@
-import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { FiHeart, FiMessageCircle, FiSend, FiUser, FiCheckCircle, FiClock } from 'react-icons/fi';
+import { ModuleAccess, type Comment, type CommunityPost } from '@/shared/types';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
+import { FiCheckCircle, FiClock, FiHeart, FiMessageCircle, FiSend, FiUser } from 'react-icons/fi';
 import { communityService } from '../../services/communityService';
 import { useAuthStore } from '../../store/authStore';
-import type { CommunityPost, Comment } from '@/shared/types';
-import toast from 'react-hot-toast';
 
 export default function CommunityPage() {
   const [posts, setPosts] = useState<CommunityPost[]>([]);
@@ -23,7 +23,7 @@ export default function CommunityPage() {
   const fetchPosts = async () => {
     try {
       setLoading(true);
-      const data = await communityService.getPosts('PASSION_COUPLES');
+      const data = await communityService.getPosts(ModuleAccess.PASSION_COUPLES);
       setPosts(data);
 
       const commentPromises = data.map(post =>
@@ -50,7 +50,7 @@ export default function CommunityPage() {
     }
 
     try {
-      await communityService.createPost(newPostContent, 'PASSION_COUPLES');
+      await communityService.createPost(newPostContent, ModuleAccess.PASSION_COUPLES);
       toast.success('Post submitted! It will appear after admin approval.');
       setNewPostContent('');
       setShowCreatePost(false);
@@ -66,12 +66,12 @@ export default function CommunityPage() {
       
       setPosts(posts.map(post => {
         if (post.id === postId) {
-          const isLiked = post.likes?.includes(user?.id || '');
+          const isLiked = post.likes?.includes(user?._id || '');
           return {
             ...post,
             likes: isLiked
-              ? post.likes.filter(id => id !== user?.id)
-              : [...(post.likes || []), user?.id || ''],
+              ? post.likes.filter(id => id !== user?._id)
+              : [...(post.likes || []), user?._id || ''],
           };
         }
         return post;
@@ -169,7 +169,7 @@ export default function CommunityPage() {
       >
         <AnimatePresence>
           {posts.map((post) => {
-            const isLiked = post.likes?.includes(user?.id || '');
+            const isLiked = post.likes?.includes(user?._id || '');
             const postComments = comments[post.id] || [];
 
             return (

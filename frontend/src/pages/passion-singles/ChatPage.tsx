@@ -1,12 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  FiSend,
-  FiUser,
-  FiMessageCircle,
-  FiUserCheck,
-  // FiLoader,
-} from "react-icons/fi";
+import { FiSend, FiUser, FiMessageCircle, FiUserCheck } from "react-icons/fi";
 import { chatService } from "../../services/chatService";
 import { useSocket } from "../../hooks/useSocket";
 import {
@@ -15,6 +9,7 @@ import {
   sendSocketMessage,
   joinChat,
   leaveChat,
+  onTyping,
 } from "../../services/socketService";
 import { useAuthStore } from "../../store/authStore";
 import type { ChatMessage } from "@/shared/types";
@@ -48,7 +43,7 @@ export default function ChatPage() {
         }
       });
 
-      const typingUnsubscribe = emitTyping((data) => {
+      const typingUnsubscribe = onTyping((data) => {
         if (data.isTyping) {
           setTypingUsers((prev) => new Set([...prev, data.userId]));
         } else {
@@ -220,7 +215,7 @@ export default function ChatPage() {
       <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-background">
         <AnimatePresence>
           {messages.map((message, index) => {
-            const isOwn = message.senderId === user?.id;
+            const isOwn = message.senderId === user?._id;
             const isNewDay =
               index === 0 ||
               new Date(message.createdAt).toDateString() !==

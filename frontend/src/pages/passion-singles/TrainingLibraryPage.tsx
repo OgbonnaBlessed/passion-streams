@@ -1,17 +1,17 @@
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Content, ContentType, ModuleAccess } from "@/shared/types";
+import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import {
-  FiSearch,
-  FiFilter,
   FiFileText,
+  FiFilter,
   FiHeadphones,
-  FiPlayCircle,
   // FiDownload,
   FiLock,
+  FiPlayCircle,
+  FiSearch,
 } from "react-icons/fi";
 import { contentService } from "../../services/contentService";
-import type { Content, ContentType, ModuleAccess } from "@/shared/types";
-import toast from "react-hot-toast";
 
 export default function TrainingLibraryPage() {
   const [content, setContent] = useState<Content[]>([]);
@@ -34,7 +34,9 @@ export default function TrainingLibraryPage() {
   const fetchContent = async () => {
     try {
       setLoading(true);
-      const data = await contentService.getContent("PASSION_SINGLES");
+      const data = await contentService.getContent(
+        ModuleAccess.PASSION_SINGLES,
+      );
       setContent(data);
       setFilteredContent(data);
 

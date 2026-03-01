@@ -1,21 +1,20 @@
-import { NavLink, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   FiBook,
-  FiUsers,
-  FiMessageCircle,
-  // FiHome,
   FiHeart,
-  FiTrendingUp,
+  FiMessageCircle,
   FiSettings,
+  FiTrendingUp,
+  FiUsers,
 } from "react-icons/fi";
+import { NavLink } from "react-router-dom";
 
 interface ModuleNavigationProps {
   module: "singles" | "connect" | "couples";
 }
 
 export default function ModuleNavigation({ module }: ModuleNavigationProps) {
-  const location = useLocation();
+  // const location = useLocation();
   const basePath = `/passion-${module}`;
 
   const getNavItems = () => {
@@ -76,7 +75,7 @@ export default function ModuleNavigation({ module }: ModuleNavigationProps) {
       <div className="flex space-x-2 overflow-x-auto scrollbar-hide">
         {navItems.map((item) => {
           const Icon = item.icon;
-          const isActive = location.pathname.startsWith(item.path);
+          // const isActive = location.pathname.startsWith(item.path);
 
           return (
             <NavLink

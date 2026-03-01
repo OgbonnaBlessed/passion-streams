@@ -1,19 +1,17 @@
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Course, CourseProgress, CourseTier } from "@/shared/types";
+import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import {
   FiBook,
-  FiLock,
-  FiUnlock,
   FiCheckCircle,
+  FiLock,
   FiPlayCircle,
   FiTrendingUp,
-  // FiClock,
+  FiUnlock,
 } from "react-icons/fi";
+import { Link } from "react-router-dom";
 import { courseService } from "../../services/courseService";
-// import { useAuthStore } from '../../store/authStore';
-import type { Course, CourseProgress, CourseTier } from "@/shared/types";
-import toast from "react-hot-toast";
 
 export default function CoursesPage() {
   const [courses, setCourses] = useState<Course[]>([]);
@@ -21,7 +19,7 @@ export default function CoursesPage() {
     Record<string, CourseProgress>
   >({});
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<"ALL" | CourseTier>("ALL");
+  const [filter, setFilter] = useState<CourseTier>(CourseTier.ALL);
 
   useEffect(() => {
     fetchCourses();
@@ -113,10 +111,10 @@ export default function CoursesPage() {
         transition={{ delay: 0.1 }}
         className="flex space-x-4 mb-8"
       >
-        {(["ALL", "FREE", "PREMIUM"] as const).map((tab) => (
+        {(Object.values(CourseTier) as string[]).map((tab) => (
           <button
             key={tab}
-            onClick={() => setFilter(tab)}
+            onClick={() => setFilter(tab as CourseTier)}
             className={`px-6 py-3 rounded-lg font-semibold transition-all ${
               filter === tab
                 ? "bg-gradient-blue text-white shadow-lg shadow-primary-blue/50"
@@ -232,7 +230,7 @@ export default function CoursesPage() {
                 {/* Action Button */}
                 <Link
                   to={`/passion-singles/courses/${course.id}`}
-                  className="block w-full px-4 py-3 bg-gradient-blue text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-primary-blue/50 transition-all text-center flex items-center justify-center space-x-2"
+                  className="block w-full px-4 py-3 bg-gradient-blue text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-primary-blue/50 transition-all text-center items-center justify-center space-x-2"
                 >
                   {progress > 0 ? (
                     <>

@@ -10,7 +10,7 @@ import {
   FiBookOpen,
 } from "react-icons/fi";
 import { contentService } from "../../services/contentService";
-import type { Content, ContentType, ModuleAccess } from "@/shared/types";
+import { Content, ContentType, ModuleAccess } from "@/shared/types";
 import toast from "react-hot-toast";
 
 export default function ContentLibraryPage() {
@@ -32,7 +32,7 @@ export default function ContentLibraryPage() {
   const fetchContent = async () => {
     try {
       setLoading(true);
-      const data = await contentService.getContent("PASSION_COUPLES");
+      const data = await contentService.getContent(ModuleAccess.PASSION_COUPLES);
       setContent(data);
       setFilteredContent(data);
     } catch (error: any) {

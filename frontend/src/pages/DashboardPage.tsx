@@ -1,9 +1,7 @@
-// import { useEffect } from 'react';
+import { FiArrowRight, FiBook, FiHeart, FiUsers } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
+import { AGE_LIMITS, MODULE_ACCESS_RULES } from '../../../shared/constants';
 import { useAuthStore } from '../store/authStore';
-import { MODULE_ACCESS_RULES, AGE_LIMITS } from '../../../shared/constants';
-import { FiUsers, FiHeart, FiBook, FiArrowRight } from 'react-icons/fi';
-// import type { ModuleAccess } from '../../../shared/types';
 
 export default function DashboardPage() {
   const { user } = useAuthStore();

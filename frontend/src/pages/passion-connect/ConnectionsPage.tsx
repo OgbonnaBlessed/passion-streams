@@ -78,8 +78,8 @@ export default function ConnectionsPage() {
           animate="visible"
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
         >
-          {connections.map((connection, index) => {
-            const otherUserId = connection.user1Id; // Simplified - would need to get actual user data
+          {connections.map((connection) => {
+            // const otherUserId = connection.user1Id; // Simplified - would need to get actual user data
             const connectedAt = connection.connectedAt
               ? new Date(connection.connectedAt).toLocaleDateString()
               : "Recently";

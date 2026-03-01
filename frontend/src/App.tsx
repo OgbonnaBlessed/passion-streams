@@ -1,34 +1,34 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import { useAuthStore } from './store/authStore';
-import ProtectedRoute from './components/common/ProtectedRoute';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import AdminRoute from './components/common/AdminRoute';
+import ProtectedRoute from './components/common/ProtectedRoute';
+import { useAuthStore } from './store/authStore';
 
 // Auth pages
 import LoginPage from './pages/auth/LoginPage';
 import SignupPage from './pages/auth/SignupPage';
 
 // Main pages
-import HomePage from './pages/HomePage';
 import DashboardPage from './pages/DashboardPage';
+import HomePage from './pages/HomePage';
 
 // Module pages
-import PassionSinglesPage from './pages/passion-singles/PassionSinglesPage';
 import PassionConnectPage from './pages/passion-connect/PassionConnectPage';
 import PassionCouplesPage from './pages/passion-couples/PassionCouplesPage';
+import PassionSinglesPage from './pages/passion-singles/PassionSinglesPage';
 
 // Admin
-import AdminLoginPage from './pages/admin/AdminLoginPage';
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
+import AdminLoginPage from './pages/admin/AdminLoginPage';
 
 // Other pages
-import PartnershipPage from './pages/PartnershipPage';
 import NotFoundPage from './pages/NotFoundPage';
+import PartnershipPage from './pages/PartnershipPage';
 
 import Layout from './components/common/Layout';
 
 function App() {
-  const { user, isAuthenticated } = useAuthStore();
+  const { isAuthenticated } = useAuthStore();
 
   return (
     <>

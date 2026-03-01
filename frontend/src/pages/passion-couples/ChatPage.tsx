@@ -1,25 +1,24 @@
-import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import type { ChatMessage } from "@/shared/types";
+import { format } from "date-fns";
+import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
 import {
+  FiMessageCircle,
   FiSend,
   FiUser,
-  FiMessageCircle,
   FiUserCheck,
-  // FiLoader,
 } from "react-icons/fi";
-import { chatService } from "../../services/chatService";
 import { useSocket } from "../../hooks/useSocket";
+import { chatService } from "../../services/chatService";
 import {
-  onNewMessage,
   emitTyping,
-  sendSocketMessage,
   joinChat,
   leaveChat,
+  onNewMessage,
+  sendSocketMessage,
 } from "../../services/socketService";
 import { useAuthStore } from "../../store/authStore";
-import type { ChatMessage } from "@/shared/types";
-import toast from "react-hot-toast";
-import { format } from "date-fns";
 
 export default function ChatPage() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -31,6 +30,8 @@ export default function ChatPage() {
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { user } = useAuthStore();
   const socket = useSocket();
+
+  console.log(setTypingUsers);
 
   useEffect(() => {
     initializeChat();
@@ -69,7 +70,7 @@ export default function ChatPage() {
       );
 
       if (!adminChat) {
-        toast.info("Starting new chat with admin...");
+        toast("Starting new chat with admin...");
       } else {
         setChatId(adminChat.id);
         const messagesData = await chatService.getMessages(adminChat.id);
@@ -180,7 +181,7 @@ export default function ChatPage() {
       <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-background">
         <AnimatePresence>
           {messages.map((message, index) => {
-            const isOwn = message.senderId === user?.id;
+            const isOwn = message.senderId === user?._id;
             const isNewDay =
               index === 0 ||
               new Date(message.createdAt).toDateString() !==
