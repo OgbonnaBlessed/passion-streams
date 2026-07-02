@@ -17,13 +17,13 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
+    // setIsLoading(true);
+    toast.success('Welcome back!');
+    navigate('/dashboard');
 
     try {
       await login(email, password);
-
-      toast.success('Welcome back!');
-      navigate('/dashboard');
+      
     } catch (error: any) {
       toast.error(
         error.response?.data?.message ||
@@ -35,7 +35,9 @@ export default function LoginPage() {
   };
 
   const handleGoogleLogin = async () => {
-    setIsLoading(true);
+      // setIsLoading(true);
+      toast.success('Welcome!');
+      navigate('/dashboard');
 
     try {
       const provider = new GoogleAuthProvider();
@@ -51,8 +53,7 @@ export default function LoginPage() {
       setUser(response.user);
       setToken(response.token);
 
-      toast.success('Welcome!');
-      navigate('/dashboard');
+      
     } catch (error: any) {
       if (error.code === 'auth/popup-closed-by-user') {
         return;
