@@ -31,7 +31,28 @@ export default function LoginPage() {
     <div className="min-h-screen bg-background flex items-center justify-center px-4">
       <div className="w-full max-w-md">
 
-        {/* existing header */}
+        <div className="text-center mb-8">
+  <div className="flex justify-center mb-4">
+    <img
+      src="/logo.png"
+      alt="PassionStreams Logo"
+      className="h-16 w-16 object-contain"
+    />
+  </div>
+
+  <h1 className="text-4xl font-bold mb-2">
+    <span className="text-gradient-blue">
+      Passion
+    </span>
+    <span className="text-gradient-pink">
+      Streams
+    </span>
+  </h1>
+
+  <p className="text-gray-400">
+    Sign in to your account
+  </p>
+</div>
 
         <div className="bg-accent-white/50 backdrop-blur-sm rounded-xl p-8 border border-accent-white">
 
