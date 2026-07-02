@@ -21,17 +21,17 @@ export default function LoginPage() {
     toast.success('Welcome back!');
     navigate('/dashboard');
 
-    try {
-      await login(email, password);
+    //try {
+      //await login(email, password);
       
-    } catch (error: any) {
-      toast.error(
-        error.response?.data?.message ||
-          'Login failed. Please try again.'
-      );
-    } finally {
-      setIsLoading(false);
-    }
+ //   } catch (error: any) {
+  //    toast.error(
+    //    error.response?.data?.message ||
+//          'Login failed. Please try again.'
+      //);
+ //   } finally {
+      //setIsLoading(false);
+ //   }
   };
 
   const handleGoogleLogin = async () => {
@@ -39,33 +39,33 @@ export default function LoginPage() {
       toast.success('Welcome!');
       navigate('/dashboard');
 
-    try {
-      const provider = new GoogleAuthProvider();
+    //try {
+      //const provider = new GoogleAuthProvider();
 
-      const result = await signInWithPopup(auth, provider);
+ //     const result = await signInWithPopup(auth, provider);
 
-      const idToken = await result.user.getIdToken();
+      //const idToken = await result.user.getIdToken();
 
-      const response = await authService.googleLogin(idToken);
+      //const response = await authService.googleLogin(idToken);
 
-      const { setUser, setToken } = useAuthStore.getState();
+      //const { setUser, setToken } = useAuthStore.getState();
 
-      setUser(response.user);
-      setToken(response.token);
+ //     setUser(response.user);
+      //setToken(response.token);
 
       
-    } catch (error: any) {
-      if (error.code === 'auth/popup-closed-by-user') {
-        return;
-      }
+    //} catch (error: any) {
+  //    if (error.code === 'auth/popup-closed-by-user') {
+  //      return;
+  //    }
 
-      toast.error(
-        error.response?.data?.message ||
-          'Google login failed'
-      );
-    } finally {
-      setIsLoading(false);
-    }
+      //toast.error(
+   //     error.response?.data?.message ||
+     //     'Google login failed'
+   //   );
+ //   } finally {
+   //   setIsLoading(false);
+  //  }
   };
 
   return (
@@ -117,7 +117,7 @@ export default function LoginPage() {
                   onChange={(e) =>
                     setEmail(e.target.value)
                   }
-                  required
+                  //required
                   placeholder="you@example.com"
                   className="w-full pl-10 pr-4 py-3 bg-background border border-accent-white rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent"
                 />
@@ -142,7 +142,7 @@ export default function LoginPage() {
                   onChange={(e) =>
                     setPassword(e.target.value)
                   }
-                  required
+                  //required
                   placeholder="••••••••"
                   className="w-full pl-10 pr-4 py-3 bg-background border border-accent-white rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent"
                 />
@@ -150,8 +150,8 @@ export default function LoginPage() {
             </div>
 
             <button
-              type="submit"
-              disabled={isLoading}
+              // type="submit"
+             // disabled={isLoading}
               className="w-full bg-gradient-blue text-white py-3 rounded-lg font-semibold hover:shadow-lg hover:shadow-primary-blue/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
             >
               {isLoading ? (
@@ -181,7 +181,7 @@ export default function LoginPage() {
             <button
               type="button"
               onClick={handleGoogleLogin}
-              disabled={isLoading}
+              //disabled={isLoading}
               className="w-full px-4 py-3 bg-background border border-accent-white rounded-lg text-white hover:bg-accent-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
             >
               <svg
